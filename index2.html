@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jardín Eterno</title>
+
+    <style>
+        :root {
+            --bg: #05060f;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-family: 'Garamond', serif;
+        }
+
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease;
+        }
+
+        #start-btn {
+            padding: 15px 40px;
+            background: transparent;
+            color: white;
+            border: 1px solid white;
+            cursor: pointer;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+
+        #start-btn:hover { background: white; color: black; }
+
+        .world {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .night-sky {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 70% 20%, #16213e 0%, #05060f 100%);
+            z-index: -2;
+        }
+
+        .moon {
+            position: absolute;
+            top: 50px;
+            right: 80px;
+            width: 100px;
+            height: 100px;
+            background: #fdfae1;
+            border-radius: 50%;
+            box-shadow: 0 0 40px #fdfae1, 0 0 100px rgba(255,255,255,0.1);
+        }
+
+        .text-box {
+            position: absolute;
+            top: 10%;
+            left: 50px;
+            max-width: 400px;
+            padding: 25px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            color: white;
+            font-style: italic;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            animation: floatText 6s ease-in-out infinite;
+        }
+
+        @keyframes floatText {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            animation: shoot 5s linear infinite;
+        }
+
+        @keyframes shoot {
+            0% { transform: translate(-100px,0) rotate(30deg); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translate(120vw,60vh) rotate(30deg); opacity: 0; }
+        }
+
+        .garden {
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            margin-bottom: -10px;
+            z-index: 10;
+        }
+
+        .flower {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform-origin: bottom center;
+            animation: sway 4s ease-in-out infinite alternate;
+        }
+
+        .stem {
+            width: 8px;
+            height: var(--h);
+            background: linear-gradient(to top, #132a13, #3a5a40);
+            border-radius: 4px;
+            margin-top: -12px;
+        }
+
+        /* ===== ROSA REAL ===== */
+        .rose .head {
+            width: 90px;
+            height: 90px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rose-petal {
+            position: absolute;
+            width: 38px;
+            height: 38px;
+            background: radial-gradient(circle at 30% 30%, #ff4d6d, #6a040f);
+            border-radius: 60% 40% 60% 40%;
+            transform-origin: bottom right;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.35);
+        }
+
+        /* ===== GERBERA REAL ===== */
+        .gerbera .head {
+            width: 110px;
+            height: 110px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0;
+        }
+
+        .gerbera-center {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: radial-gradient(circle, #5a2a0c, #3a1a08);
+            border-radius: 50%;
+            z-index: 5;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+        }
+
+        .gerbera-petal {
+            position: absolute;
+            width: 10px;
+            height: 50px;
+            background: linear-gradient(to top, rgba(255,255,255,0.2), var(--c));
+            border-radius: 60% 60% 10% 10%;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+        }
+
+        .grass-blade {
+            position: absolute;
+            bottom: 0;
+            width: 4px;
+            background: #2d6a4f;
+            border-radius: 50% 50% 0 0;
+            opacity: 0.7;
+            z-index: 5;
+        }
+
+        .spotify-link {
+    position: absolute;
+    top: 38%;
+    left: 50px;
+    padding: 12px 24px;
+    color: white;
+    text-decoration: none;
+    font-style: italic;
+    letter-spacing: 1px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 30px;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+.spotify-link:hover {
+    background: #1DB954; /* verde Spotify */
+    color: black;
+}
+
+.album {
+    position: absolute;
+    left: 65%;
+top: 18%;
+    top: 18%;        /* más arriba */
+    z-index: 50;     /* por encima de flores */
+    width: 260px;
+    padding: 12px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 18px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    cursor: pointer;
+    user-select: none;
+    animation: floatText 7s ease-in-out infinite;
+    cursor: grab;
+}
+
+.album img {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+}
+
+.album-hint {
+    margin-top: 8px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.7);
+    font-style: italic;
+}
+
+.album:active {
+    cursor: grabbing;
+}
+
+
+
+        @keyframes sway {
+            from { transform: rotate(-3deg); }
+            to { transform: rotate(3deg); }
+        }
+    </style>
+</head>
+
+<body>
+
+<div id="overlay">
+    <button id="start-btn">ENTRAR AL JARDÍN</button>
+</div>
+
+<div class="world" id="world">
+    <div class="night-sky"></div>
+    <div class="moon"></div>
+
+    <div class="shooting-star" style="top:10%; animation-delay:0s;"></div>
+    <div class="shooting-star" style="top:30%; animation-delay:3s;"></div>
+
+    <div class="text-box">
+        "De entre todas las maravillas que adornan el universo, desde el brillo de las estrellas en la noche hasta la delicadeza de las flores en el jardín, mi mirada se posa únicamente en ti."
+        Te quiere Andy
+    </div>
+
+    <a href="https://open.spotify.com/intl-es/track/2dSz2px33HmyFwL5rDlh2e?si=341507b20a06499b"
+   target="_blank"
+   class="spotify-link">
+   🎵 Escuchar la canción
+    </a>
+
+    <div class="album">
+    <img id="album-img" src="img1.jpeg" alt="Recuerdo">
+    <div class="album-hint">Haz click para cambiar</div>
+</div>
+
+
+    <div class="garden" id="garden"></div>
+    <div id="grass-container"></div>
+</div>
+
+<script>
+    const btn = document.getElementById('start-btn');
+    const overlay = document.getElementById('overlay');
+    const world = document.getElementById('world');
+    const garden = document.getElementById('garden');
+    const grassContainer = document.getElementById('grass-container');
+
+    const colors = ['#e63946','#f1faee','#ffb703','#fb8500','#ff006e'];
+
+    function createRose(height) {
+        const div = document.createElement('div');
+        div.className = 'flower rose';
+        div.style.setProperty('--h', height + 'px');
+
+        const head = document.createElement('div');
+        head.className = 'head';
+
+        for (let i = 0; i < 14; i++) {
+    const p = document.createElement('div');
+    p.className = 'rose-petal';
+    p.style.transform = `
+        rotate(${i * 28}deg)
+        translate(${i * 2}px, ${i * 2}px)
+        scale(${1 - i * 0.04})
+    `;
+    p.style.zIndex = 30 - i;
+    head.appendChild(p);
+}
+
+        const stem = document.createElement('div');
+        stem.className = 'stem';
+
+        div.append(head, stem);
+        return div;
+    }
+
+    function createGerbera(height, color) {
+        const div = document.createElement('div');
+        div.className = 'flower gerbera';
+        div.style.setProperty('--h', height + 'px');
+
+        const head = document.createElement('div');
+        head.className = 'head';
+
+        for (let i = 0; i < 32; i++) {
+            const p = document.createElement('div');
+            p.className = 'gerbera-petal';
+            p.style.setProperty('--c', color);
+            p.style.transform = `translateX(-50%) rotate(${i * (360 / 32)}deg)`;
+            head.appendChild(p);
+        }
+
+        const center = document.createElement('div');
+        center.className = 'gerbera-center';
+
+        const stem = document.createElement('div');
+        stem.className = 'stem';
+
+        head.appendChild(center);
+        div.append(head, stem);
+        return div;
+    }
+
+    btn.addEventListener('click', () => {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            world.style.display = 'flex';
+
+            for (let i = 0; i < 10; i++) {
+                const h = 150 + Math.random() * 200;
+                const col = colors[Math.floor(Math.random() * colors.length)];
+                garden.appendChild(createGerbera(h, col));
+            }
+
+            for (let i = 0; i < 100; i++) {
+                const blade = document.createElement('div');
+                blade.className = 'grass-blade';
+                blade.style.left = Math.random() * 100 + 'vw';
+                blade.style.height = 20 + Math.random() * 40 + 'px';
+                blade.style.animation = `sway ${2 + Math.random()}s infinite alternate`;
+                grassContainer.appendChild(blade);
+            }
+        }, 1000);
+    });
+
+const albumImages = [
+    'img1.jpeg',
+    'img2.jpeg',
+    'img3.jpeg',
+    'img4.jpeg',
+    'img5.jpeg',
+    'img6.jpeg'
+];
+
+let currentImg = 0;
+const albumImg = document.getElementById('album-img');
+
+albumImg.parentElement.addEventListener('click', () => {
+    currentImg = (currentImg + 1) % albumImages.length;
+    albumImg.src = albumImages[currentImg];
+});
+
+const album = document.querySelector('.album');
+
+let isDragging = false;
+let offsetX = 0;
+let offsetY = 0;
+
+album.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    offsetX = e.clientX - album.offsetLeft;
+    offsetY = e.clientY - album.offsetTop;
+    album.style.transition = 'none';
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    album.style.left = (e.clientX - offsetX) + 'px';
+    album.style.top = (e.clientY - offsetY) + 'px';
+});
+
+document.addEventListener('mouseup', () => {
+    isDragging = false;
+    album.style.transition = '';
+});
+
+
+</script>
+
+</body>
+</html>
